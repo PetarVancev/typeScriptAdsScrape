@@ -1,15 +1,5 @@
 import puppeteer from "puppeteer";
 
-const { Pool } = require("pg");
-
-const pool = new Pool({
-  user: "test_user",
-  database: "taskDB",
-  password: "Watermelon555",
-  port: 5431,
-  host: "localhost",
-});
-
 async function start() {
   let data = [];
   for (let j = 1; j <= 25; j++) {
@@ -17,10 +7,17 @@ async function start() {
       "https://www.sreality.cz/en/search/for-sale/apartments/all-countries?page=" +
       j;
 
-    const browser = await puppeteer.launch();
+    const browser = await puppeteer.launch({
+      executablePath: "/usr/bin/google-chrome",
+      args: ["--no-sandbox"], // Required.
+      headless: true,
+    });
+
     const page = await browser.newPage();
 
-    await page.goto(url, { waitUntil: "networkidle2" });
+    await page.goto(url, { timeout: 50000, waitUntil: "networkidle2" });
+
+    await page.setDefaultNavigationTimeout(0);
 
     const pageData = await page.evaluate(() => {
       const titlesArray: string[] = [];
@@ -66,3 +63,36 @@ async function insertData() {
   console.log("db data added");
 }
 insertData();
+
+import express, { Express, Request, Response } from "express";
+import dotenv from "dotenv";
+
+const app: Express = express();
+const cors = require("cors");
+
+app.use(cors());
+
+const port = process.env.PORT || 3005;
+
+const { Pool } = require("pg");
+
+const pool = new Pool({
+  user: "postgres",
+  database: "postgres",
+  password: "Postgres555",
+  port: 5432,
+  host: "postgres",
+});
+
+app.get("/getData", (req: Request, res: Response) => {
+  pool.query("SELECT * FROM sitedb ORDER BY id ASC", (error, results) => {
+    if (error) {
+      throw error;
+    }
+    res.status(200).json(results.rows);
+  });
+});
+
+app.listen(port, () => {
+  console.log(`⚡️[server]: Server is running at https://localhost:${port}`);
+});

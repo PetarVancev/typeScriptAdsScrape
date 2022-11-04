@@ -13,7 +13,7 @@ const App = () => {
   useEffect(() => {
     const fetchAds = async () => {
       setLoading(true);
-      const res = await axios.get("http://localhost:3007/getData");
+      const res = await axios.get("http://localhost:3005/getData");
       setAds(res.data);
       setLoading(false);
     };

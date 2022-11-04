@@ -5,15 +5,18 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const dotenv_1 = __importDefault(require("dotenv"));
+// import insertData from "./db";
 const app = (0, express_1.default)();
-const port = process.env.PORT || 3005;
+const cors = require("cors");
+app.use(cors());
+const port = process.env.PORT || 5000;
 const { Pool } = require("pg");
 const pool = new Pool({
-    user: "test_user",
-    database: "taskDB",
-    password: "Watermelon555",
-    port: 5431,
-    host: "localhost",
+    user: "postgres",
+    database: "postgres",
+    password: "Postgres555",
+    port: 5432,
+    host: "postgres",
 });
 dotenv_1.default.config();
 app.get("/getData", (req, res) => {
@@ -27,4 +30,4 @@ app.get("/getData", (req, res) => {
 app.listen(port, () => {
     console.log(`⚡️[server]: Server is running at https://localhost:${port}`);
 });
-//# sourceMappingURL=indexas.js.map
+//# sourceMappingURL=index.js.map
